@@ -1,0 +1,120 @@
+{
+  "release": "4.3.3",
+  "htmlSha256": "2a1e67b6e74e749b848c1bbec8767d46082920d8f392310259831e8b84e4cd70",
+  "branding": {
+    "wordmark": "TRIScore",
+    "title": "TRIScore 4.3.3 / Inferno Lab"
+  },
+  "passed": 10,
+  "results": [
+    "Shipping UI, model modules, desktop source and guides use the new identity",
+    "Renamed global APIs initialize alongside the retained workbenches",
+    "All 24 workbenches and their navigation/accessibility labels pass the runtime identity audit",
+    "The command palette opens Cosmic Origins under the TRIScore wordmark",
+    "Expanded Big Bang epochs and the Big Bounce retain their numerical behavior",
+    "Zap, stirring and magnetization still drive actual charged/dipolar bead state",
+    "Independent custom light/dark colors, graph palettes, line widths and patterns survive reload",
+    "Origins JSON and PNG downloads use rebranded filenames and portable schemas",
+    "Retained Atlas and workspace exports retain their functionality with the new identity",
+    "The complete identity audit finishes without renderer exceptions"
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "title": "One console.Every lab."
+    },
+    {
+      "id": "relativity",
+      "title": "A little closerto lightspeed."
+    },
+    {
+      "id": "orbital",
+      "title": "Orbital Lab."
+    },
+    {
+      "id": "evidence",
+      "title": "Evidence Lab."
+    },
+    {
+      "id": "notes",
+      "title": "Field notes."
+    },
+    {
+      "id": "forge",
+      "title": "Shape yourlittle system."
+    },
+    {
+      "id": "kaos",
+      "title": "Pure Kaos."
+    },
+    {
+      "id": "exchange",
+      "title": "Good sciencetravels."
+    },
+    {
+      "id": "dreamflex",
+      "title": "DreamFlex."
+    },
+    {
+      "id": "colors",
+      "title": "A world inyour colors."
+    },
+    {
+      "id": "export",
+      "title": "Your data."
+    },
+    {
+      "id": "nexus",
+      "title": "Beautifullyunstable."
+    },
+    {
+      "id": "resonance",
+      "title": "Nothing movesalone."
+    },
+    {
+      "id": "matter3d",
+      "title": "Make itelemental."
+    },
+    {
+      "id": "bondlab",
+      "title": "Let the bondsdecide."
+    },
+    {
+      "id": "forcefields",
+      "title": "More elements.Explicit physics."
+    },
+    {
+      "id": "capsules",
+      "title": "Carry the science.Keep the context."
+    },
+    {
+      "id": "sentinel",
+      "title": "Your notes.Your key."
+    },
+    {
+      "id": "accelerator",
+      "title": "Small particles.Big questions."
+    },
+    {
+      "id": "frontier",
+      "title": "Explore boldly.Verify everything."
+    },
+    {
+      "id": "tris",
+      "title": "A place to remember."
+    },
+    {
+      "id": "topology",
+      "title": "The shape of everything."
+    },
+    {
+      "id": "atlas",
+      "title": "A window into hidden dimensions."
+    },
+    {
+      "id": "origins",
+      "title": "Light the fuse. Explore everything."
+    }
+  ],
+  "errors": []
+}

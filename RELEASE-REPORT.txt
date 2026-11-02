@@ -1,0 +1,23 @@
+TRIScore 4.3.3 — RELEASE VERIFICATION
+November 2, 2026
+
+The product wordmark is exactly TRIScore. Removed the former product suffix
+from interface labels, native captions, About/error dialogs, Windows product
+metadata, package names, executable filenames, source and guides.
+
+PASS: 92 existing numerical, state, compatibility and release tests.
+PASS: 10 browser workflows, including branding across all 24 panels, exports,
+custom palette persistence, Big Bang/Big Bounce and active soup tools.
+PASS: 48 native Aero/window/theme checks, 24 per architecture. Fresh captures
+verify both the desktop title bar and the in-app TRIScore wordmark.
+
+Storage locations, migration helpers, authenticated data, chemistry and cosmic
+simulation logic remain unchanged. Both executables embed the verified HTML.
+The source archive and executable bytes were checked for retired product labels.
+
+ARM64 ran natively on Windows ARM; x64 ran under Windows emulation on that PC.
+No separate physical Intel/AMD machine was used. These portable EXEs bundle
+.NET 10.0.12 and require installed Microsoft Edge WebView2 Runtime. They are
+unsigned. Test processes used isolated scratch profiles only.
+
+Entry HTML SHA256: 2a1e67b6e74e749b848c1bbec8767d46082920d8f392310259831e8b84e4cd70

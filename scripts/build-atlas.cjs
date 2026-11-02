@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),sha=s=>crypto.createHash('sha256').update(s).digest('hex');
+const original=read('TRIScore4_ChaosTopology.html');
+let html=original.replace('<title>TRIScore 4.0 / Chaos Topology</title>','<title>TRIScore 4.1 / Manifold Atlas</title>').replace('4.0 / CHAOS TOPOLOGY</span>','4.1 / MANIFOLD ATLAS</span>').replace('</style></head>',read('src/atlas-style.css')+'\n</style></head>').replace('</main>',read('src/atlas-panel.html')+'\n</main>').replace('<nav aria-label="Workbench navigation">','<nav aria-label="Workbench navigation"><button data-go="atlas" aria-label="Calabi–Yau Manifold Atlas"><span aria-hidden="true">✺</span><span>Atlas</span></button>').replace('<div class="tp-launch">','<div class="cy-launch"><div><span class="cy-kicker">NEW IN 4.1 / MANIFOLD ATLAS</span><h2>A window into hidden dimensions.</h2><p>Explore Calabi–Yau charts. Save the view. Follow the question.</p></div><button data-go="atlas">Enter Manifold Atlas ↗</button></div><div class="tp-launch">');
+html=html.replace('</body>',['atlas-core.js','atlas-ui.js'].map(f=>'<script>\n'+read('src/'+f)+'\n</script>').join('\n')+'</body>');
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]),styles=[...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m=>m[1]),old=[...original.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+if(!old.every((s,i)=>scripts[i]===s))throw Error('A retained 4.0 module script changed.');
+const hash=s=>"'sha256-"+crypto.createHash('sha256').update(s).digest('base64')+"'";
+const policy="default-src 'none'; script-src "+scripts.map(hash).join(' ')+"; style-src "+styles.map(hash).join(' ')+"; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'";
+html=html.replace(/(<meta http-equiv="Content-Security-Policy" content=")[^"]*(">)/,(_,a,b)=>a+policy+b);
+fs.writeFileSync(path.join(root,'TRIScore4_1_ManifoldAtlas.html'),html);
+const manifest={release:'4.1.0',lineage:'TRIScore 4.0 Chaos Topology (not Element Forge / Nocturne)',baseSha256:sha(original),retainedScripts:old.length,addedScripts:2,htmlSha256:sha(html),entry:'TRIScore4_1_ManifoldAtlas.html'};
+fs.writeFileSync(path.join(root,'BUILD-MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n');console.log(JSON.stringify(manifest,null,2));

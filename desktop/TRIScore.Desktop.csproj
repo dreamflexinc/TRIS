@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-arm64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-arm64;win-x64</RuntimeIdentifiers>
+    <RuntimeFrameworkVersion>10.0.12</RuntimeFrameworkVersion>
+    <PlatformTarget Condition="'$(RuntimeIdentifier)' == 'win-arm64'">ARM64</PlatformTarget>
+    <PlatformTarget Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</PlatformTarget>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TRIScore_4.3.3_$(RuntimeIdentifier)</AssemblyName>
+    <Product>TRIScore 4.3.3</Product>
+    <Description>TRIScore Inferno Lab with interactive primordial soup, cosmic epochs and the retained Manifold Atlas</Description>
+    <Version>4.3.3</Version>
+    <ApplicationIcon>triscore.ico</ApplicationIcon>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+    <EmbeddedResource Include="../TRIScore4_3_InfernoLab.html" LogicalName="TRIScore.Workbench.html" />
+    <EmbeddedResource Include="smoke.js" LogicalName="TRIScore.Smoke.js" />
+    <EmbeddedResource Include="origins-smoke.js" LogicalName="TRIScore.OriginsSmoke.js" />
+    <EmbeddedResource Include="legacy-origins-v42.json" LogicalName="TRIScore.LegacyOrigins.json" />
+    <EmbeddedResource Include="triscore.ico" LogicalName="TRIScore.Icon.ico" />
+    <EmbeddedResource Include="THIRD-PARTY-NOTICES.txt" LogicalName="TRIScore.Notices.txt" />
+  </ItemGroup>
+  <!-- The WebView2 SDK adds WPF even to WinForms projects; it is not used here. -->
+  <Target Name="RemoveUnusedWpfReference" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Reference Remove="@(Reference)" Condition="'%(Reference.Filename)' == 'Microsoft.Web.WebView2.Wpf'" />
+    </ItemGroup>
+  </Target>
+</Project>

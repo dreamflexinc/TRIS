@@ -1,0 +1,37 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const vm = require('node:vm');
+const root = path.resolve(__dirname, '..');
+const read = name => fs.readFileSync(path.join(root, name), 'utf8');
+const snippet = name => read(name).replace(/\r\n?/g, '\n');
+const sha = text => crypto.createHash('sha256').update(text).digest('hex');
+const hash = text => "'sha256-" + crypto.createHash('sha256').update(text).digest('base64') + "'";
+const scripts = html => [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const parent = read('TRIScore4_1_ManifoldAtlas.html');
+const parentScripts = scripts(parent);
+function replaceOnce(text, search, replacement) {
+  if (!text.includes(search) || text.indexOf(search) !== text.lastIndexOf(search)) throw Error('Build anchor is missing or ambiguous: ' + search);
+  return text.replace(search, replacement);
+}
+let html = replaceOnce(parent, '<title>TRIScore 4.1 / Manifold Atlas</title>', '<title>TRIScore 4.3.3 / Inferno Lab</title>');
+html = replaceOnce(html, '<span class="subbrand">4.1 / MANIFOLD ATLAS</span>', '<span class="subbrand">4.3.3 / INFERNO LAB</span>');
+html = replaceOnce(html, '</title><script>', '</title><script>\n' + snippet('src/brand-compat.js') + '\n</script><script>');
+html = replaceOnce(html, '</style></head>', snippet('src/inferno-theme.css') + '\n' + snippet('src/origins-style.css') + '\n</style></head>');
+html = replaceOnce(html, '</main>', snippet('src/origins-panel.html') + '\n</main>');
+html = replaceOnce(html, '<nav aria-label="Workbench navigation">', '<nav aria-label="Workbench navigation"><button data-go="origins" aria-label="Cosmic Origins: Big Bang, Big Bounce and prebiotic soup"><span aria-hidden="true">✷</span><span>Origins</span></button>');
+html = replaceOnce(html, '<div class="cy-launch">', '<div class="cy-launch"><div><span class="cy-kicker">NEW IN 4.3 / INFERNO LAB</span><h2>Turn up the universe.</h2><p>Electrify, stir and magnetize a charged-particle soup. Travel from hot plasma to a cosmic web.</p></div><button data-go="origins">Enter Inferno Lab ↗</button></div><div class="cy-launch">');
+const added = ['inferno-theme.js', 'origins-core.js', 'origins-ui.js', 'origins-launch.js'];
+html = replaceOnce(html, '</body>', added.map(name => '<script>\n' + snippet('src/' + name) + '\n</script>').join('\n') + '</body>');
+const allScripts = scripts(html);
+if (!parentScripts.every((text, i) => allScripts[i + 1] === text)) throw Error('A retained module script changed during assembly.');
+allScripts.forEach((text, i) => new vm.Script(text, { filename: 'embedded-module-' + i + '.js' }));
+const styles = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m => m[1]);
+const csp = "default-src 'none'; script-src " + allScripts.map(hash).join(' ') + '; style-src ' + styles.map(hash).join(' ') + "; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'";
+html = html.replace(/(<meta http-equiv="Content-Security-Policy" content=")[^"]*(">)/, (_, a, b) => a + csp + b);
+const entry = 'TRIScore4_3_InfernoLab.html';
+fs.writeFileSync(path.join(root, entry), html);
+const manifest = { release: '4.3.3', title: 'TRIScore 4.3.3 — Inferno Lab · Aero', parent: 'TRIScore 4.3.1 Aero', retainedBase: 'TRIScore Manifold Atlas', parentSha256: sha(read('TRIScore4_2_CosmicOrigins.html')), baseSha256: sha(parent), retainedScripts: parentScripts.length, retainedModuleHashes: parentScripts.map(sha), addedScripts: added.length + 1, htmlSha256: sha(html), entry, models: ['Extended flat FLRW expansion with illustrative epoch layers', 'Speculative analytic nonsingular bounce', 'Prebiotic reaction-diffusion and charged/dipolar bead sandbox'] };
+fs.writeFileSync(path.join(root, 'BUILD-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n');
+console.log(JSON.stringify({ release: manifest.release, retainedScripts: manifest.retainedScripts, addedScripts: manifest.addedScripts, entry, htmlSha256: manifest.htmlSha256 }, null, 2));

@@ -1,0 +1,5 @@
+:root[data-inferno=on] body{background:radial-gradient(ellipse at 80% -10%,var(--accent-wash),transparent 65%),var(--bg)}
+:root[data-inferno=on] .shell>header{border-bottom-color:var(--line);box-shadow:0 1px 24px color-mix(in srgb,var(--accent) 9%,transparent)}
+:root[data-inferno=on] nav button[aria-current=page]{box-shadow:inset 2px 0 var(--accent),0 0 20px color-mix(in srgb,var(--accent) 7%,transparent)}
+.if-theme-card{border:1px solid var(--line);background:var(--card);padding:25px;border-radius:16px;grid-column:1/-1}
+.if-theme-card h2{color:var(--accent)}

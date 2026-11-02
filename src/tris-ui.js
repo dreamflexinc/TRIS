@@ -1,0 +1,65 @@
+(function(){'use strict';
+ const B=window.TRIScoreBrandCompat,T=window.TrisNative, $=id=>document.getElementById(id), vault=new T.Vault(new window.TrisBrowserStore());
+ let epoch=0, review=null, lastActivity=Date.now(), existing=false, consoleHandle=null;
+ const node=(tag,value)=>{const n=document.createElement(tag);n.textContent=value;return n;};
+ const say=(message,error=false)=>{$('tn-status').textContent=message;$('tn-status').classList.toggle('error',error);};
+ function clearDraft(){for(const id of ['tn-memory-id','tn-memory-title','tn-body','tn-project'])$(id).value='';$('tn-source').value='User-authored';$('tn-editor-title').textContent='Keep a memory.';}
+ function clearReview(){review=null;$('tn-review-info').textContent='';$('tn-import').disabled=true;}
+ function scrub(){clearDraft();clearReview();for(const el of document.querySelectorAll('#tris input:not([type=file]),#tris textarea'))el.value='';$('tn-import-file').value='';for(const id of ['tn-identity','tn-memory-list','tn-preferences','tn-snapshots','tn-capabilities','tn-permissions','tn-audit'])$(id).replaceChildren();}
+ function lock(reason='Tris sealed. Encrypted state is saved; unsaved drafts are cleared.') {epoch++;vault.lock();consoleHandle=null;scrub();render();say(reason);window.dispatchEvent(new Event('tris-unmounted'));}
+ function renderMemories(){
+   const box=$('tn-memory-list');box.replaceChildren();if(!vault.mounted)return;const q=$('tn-search').value.toLowerCase();
+   const memories=vault.readState().memories.filter(m=>[m.title,m.body,m.project].join(' ').toLowerCase().includes(q)).reverse();
+   if(!memories.length){box.append(node('p','No matching memories. Save something worth keeping.'));return;}
+   for(const m of memories){const row=node('article','');row.className='tn-entry';row.append(node('small',m.kind.toUpperCase()+(m.project?' / '+m.project:'')+' · v'+m.version),node('h3',m.title),node('p',m.body),node('small',m.source+' · '+m.updatedAt));const actions=node('div','');actions.className='td-actions';
+     const edit=node('button','Edit');edit.onclick=()=>{for(const[k,v]of Object.entries({id:m.id,title:m.title,body:m.body,kind:m.kind,project:m.project,source:m.source})){const target=k==='id'?'tn-memory-id':k==='title'?'tn-memory-title':'tn-'+k;$(target).value=v;}$('tn-editor-title').textContent='Edit this memory.';$('tn-memory-title').focus();};
+     const del=node('button','Delete');del.onclick=()=>{if(window.confirm('Delete this memory? Existing snapshots and exported backups may still contain it.'))run(()=>vault.deleteMemory(m.id),'Memory deleted.');};actions.append(edit,del);row.append(actions);box.append(row);
+   }
+ }
+ function render(){
+   const mounted=vault.mounted;$('tn-gate').hidden=mounted;$('tn-workspace').hidden=!mounted;$('tn-lock').disabled=!mounted&&!vault.busy;$('tn-mounted').textContent=mounted?'MOUNTED · LOCAL':'SEALED';$('tn-create').hidden=existing;$('tn-confirm-wrap').hidden=existing;$('tn-unlock').hidden=!existing;
+   $('tn-gate-title').textContent=existing?'Welcome back.':'Give continuity a home.';$('tn-store-status').textContent=existing?'Encrypted state found on this browser origin.':'No Tris identity on this browser origin. Create one or import a backup.';
+   $('tn-count').textContent=mounted?vault.inspect().counts.memories+' MEMORIES · SCHEMA '+T.SCHEMA:'ENCRYPTED CONTINUITY';$('tn-console-state').textContent='Sealed · unlock to mount';
+   if(!mounted)return;const s=vault.readState();$('tn-identity').textContent=JSON.stringify(s.identity,null,2);$('tn-name').value=s.profile.name;$('tn-description').value=s.profile.description;$('tn-preferences').textContent=JSON.stringify(s.preferences,null,2);$('tn-permissions').textContent=JSON.stringify(Object.fromEntries(Object.entries(s.permissions).map(([service,scopes])=>[B.displayId(service),scopes])),null,2);$('tn-capabilities').textContent=JSON.stringify(s.capabilities.map(c=>({...c,id:B.displayId(c.id)})),null,2);renderMemories();
+   $('tn-confirm-label').textContent='Type RESET '+s.identity.id+' or DELETE '+s.identity.id;
+   $('tn-audit').textContent=vault.readAudit().entries.slice().reverse().map(e=>e.seq+' · '+e.at+'\n'+B.displayId(e.actor)+' / '+e.action+(e.target?' / '+B.displayId(e.target):'')+'\n'+e.hash).join('\n\n');
+   $('tn-snapshots').replaceChildren();for(const snap of vault.listSnapshots().reverse()){const row=node('div','');row.className='tn-entry';row.append(node('h3',snap.label),node('small',snap.at+' · schema '+snap.schema));const actions=node('div','');actions.className='td-actions';const restore=node('button','Restore');restore.onclick=()=>{const confirmation=window.prompt('Type RESTORE '+s.identity.id+' to replace editable state. A safety snapshot is created; service access is revoked.');if(confirmation)run(()=>vault.rollback(snap.id,confirmation),'Snapshot restored. Service permissions revoked.');};const del=node('button','Delete snapshot');del.onclick=()=>{if(window.confirm('Delete this local snapshot?'))run(()=>vault.deleteSnapshot(snap.id),'Snapshot deleted.');};actions.append(restore,del);row.append(actions);$('tn-snapshots').append(row);}
+   try{consoleHandle=vault.attach('triscore.console',[]);$('tn-console-state').textContent=consoleHandle.identity().profile.name+' · mounted · continuity available';}catch(_){consoleHandle=null;$('tn-console-state').textContent='Mounted · console access not granted';}
+ }
+ async function run(fn,success){if(vault.busy)return;const operation=epoch;say('Working with encrypted state…');for(const b of document.querySelectorAll('#tris button'))if(b.id!=='tn-lock')b.disabled=true;
+   try{await fn();if(operation!==epoch)return;existing=await vault.exists();if(operation!==epoch)return;render();say(success);lastActivity=Date.now();if(vault.mounted)window.dispatchEvent(new CustomEvent('tris-state-changed',{detail:{mounted:true}}));}
+   catch(e){if(operation===epoch)say(e.message,true);}
+   finally{for(const el of document.querySelectorAll('#tris input[type=password]'))el.value='';for(const b of document.querySelectorAll('#tris button'))b.disabled=false;$('tn-import').disabled=!review;$('tn-lock').disabled=!vault.mounted;}
+ }
+ function matching(a,b){if($(a).value!==$(b).value)throw Error('Passphrases do not match.');return $(a).value;}
+ function download(raw){const url=URL.createObjectURL(new Blob([raw],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='Tris-backup-'+new Date().toISOString().slice(0,10)+'.tris';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+ $('tn-create').onclick=()=>run(async()=>{await vault.create(matching('tn-pass','tn-confirm'));clearDraft();},'Tris identity created and encrypted. Make an external backup when ready.');
+ $('tn-unlock').onclick=()=>run(async()=>{await vault.mount($('tn-pass').value);clearDraft();window.dispatchEvent(new Event('tris-mounted'));},'Tris mounted. Identity and saved memories restored; this is a fresh session.');
+ $('tn-lock').onclick=()=>lock();$('tn-new-memory').onclick=clearDraft;$('tn-search').oninput=renderMemories;
+ $('tn-rescue').onclick=()=>run(async()=>download(await vault.exportCiphertext()),'Unverified stored ciphertext prepared for download. Keep it before attempting recovery.');
+ $('tn-delete-sealed').onclick=()=>run(async()=>{await vault.eraseSealed($('tn-sealed-confirm').value);scrub();},'Sealed local vault deleted. You can now create or import an identity.');
+ $('tn-save-memory').onclick=()=>run(async()=>{await vault.putMemory({id:$('tn-memory-id').value||null,kind:$('tn-kind').value,title:$('tn-memory-title').value,body:$('tn-body').value,project:$('tn-project').value,source:$('tn-source').value});clearDraft();},'Memory saved and encrypted.');
+ $('tn-save-profile').onclick=()=>run(()=>vault.setProfile({name:$('tn-name').value,description:$('tn-description').value}),'Profile saved. Identity preserved.');
+ $('tn-save-pref').onclick=()=>run(()=>vault.setPreference($('tn-pref-key').value,$('tn-pref-value').value),'Preference saved.');$('tn-delete-pref').onclick=()=>run(()=>vault.setPreference($('tn-pref-key').value,null),'Preference deleted.');
+ $('tn-snapshot').onclick=()=>run(()=>vault.takeSnapshot($('tn-snapshot-label').value||'Manual checkpoint'),'Encrypted snapshot created.');
+ $('tn-verify').onclick=()=>run(async()=>{const result=await vault.verify();$('tn-review-info').textContent='Integrity receipt\n'+JSON.stringify(result,null,2);$('tn-import-details').open=true;},'Encryption was checked at unlock; current schema, audit chain, and stored revision verified. Receipt below.');
+ $('tn-export').onclick=()=>run(async()=>download(await vault.exportBackup(matching('tn-backup-pass','tn-backup-confirm'))),'Encrypted backup prepared for download. Check that your browser saved the file.');
+ $('tn-rotate').onclick=()=>run(()=>vault.rotatePassphrase(matching('tn-new-pass','tn-new-confirm')),'Vault passphrase changed. Existing external backups retain their own passwords.');
+ $('tn-reset').onclick=()=>run(async()=>{await vault.reset($('tn-danger-confirm').value);scrub();},'Editable state and local snapshots reset. Identity retained.');
+ $('tn-delete').onclick=()=>run(async()=>{await vault.erase($('tn-danger-confirm').value);scrub();},'Local Tris vault deleted. External backups are unaffected.');
+ $('tn-allow-console').onclick=()=>run(()=>vault.grant('triscore.console',['identity:read']),'Console identity access granted.');$('tn-revoke-console').onclick=()=>run(()=>vault.grant('triscore.console',[]),'Console access revoked.');
+ const modules=()=>[['sentinel','TRIScoreSentinel','Explicit notebook sealing'],['forcefields','GoblinForceFieldLab','Force field workbench'],['collider','TRIScoreColliderLab','Collider simulations'],['capsules','TRIScoreCapsules','Reviewed science transfers']].filter(([,global])=>!!window[global]).map(([id,,description])=>({id:'triscore.'+id,description,version:'2.0-retained'}));
+ $('tn-register').onclick=()=>run(()=>vault.setCapabilities(modules()),'Available module descriptions registered. No execution permission granted.');
+ $('tn-persist').onclick=async()=>{try{$('tn-persistence').textContent=await navigator.storage?.persist?.()?'Browser granted persistent storage. Keep an external backup too.':'Persistent storage not granted. Use encrypted external backups.';}catch(e){$('tn-persistence').textContent=e.message;}};
+ $('tn-import-file').onchange=async()=>{clearReview();const file=$('tn-import-file').files[0];if(!file)return;if(file.size>T.MAX_BYTES*1.5){say('Backup file exceeds 24 MiB.',true);return;}const operation=epoch;const raw=await file.text();if(operation!==epoch)return;$('tn-import-text').value=raw;};
+ function clearImport(){clearReview();for(const id of ['tn-import-text','tn-import-pass','tn-import-new','tn-import-new-confirm','tn-import-confirm'])$(id).value='';$('tn-import-file').value='';}
+ $('tn-import-text').oninput=clearReview;$('tn-import-clear').onclick=clearImport;
+ $('tn-review').onclick=()=>run(async()=>{clearReview();review=await vault.reviewBackup($('tn-import-text').value,$('tn-import-pass').value);$('tn-review-info').textContent=JSON.stringify(review,null,2);$('tn-import').disabled=false;},'Backup authenticated. Check the identity, re-enter its passphrase, then confirm import.');
+ $('tn-import').onclick=()=>run(async()=>{if(!review)throw Error('Review the backup first.');await vault.importBackup($('tn-import-text').value,$('tn-import-pass').value,matching('tn-import-new','tn-import-new-confirm'),$('tn-import-confirm').value,review.fingerprint);clearImport();clearDraft();},'Identity imported and encrypted with the new local passphrase. Service permissions revoked.');
+ document.querySelectorAll('[data-tn-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tn-tab]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.querySelectorAll('[data-tn-pane]').forEach(p=>p.hidden=p.dataset.tnPane!==b.dataset.tnTab);});
+ window.addEventListener('triscore-freeze',()=>lock('Sealed by Sentinel. Saved continuity retained.'));window.addEventListener('pagehide',()=>lock());document.addEventListener('visibilitychange',()=>{if(document.hidden)lock('Sealed while the app was hidden.');});
+ for(const event of ['pointerdown','keydown'])document.addEventListener(event,()=>{lastActivity=Date.now();},{passive:true});setInterval(()=>{if(vault.mounted&&Date.now()-lastActivity>300000)lock('Sealed after five minutes of inactivity.');},1000);
+ // Only the trusted console adapter is exposed. The owner vault and keys remain in this closure.
+ window.TRIScoreTris=Object.freeze({status:()=>vault.status(),seal:()=>lock(),consoleIdentity:()=>{if(!consoleHandle)throw Error('Console identity access is not mounted.');return consoleHandle.identity();}});
+ vault.exists().then(value=>{existing=value;render();say(value?'Encrypted Tris state found. Unlock to resume.':'Ready to create or import Tris continuity.');}).catch(e=>{say('Storage unavailable: '+e.message,true);$('tn-create').disabled=true;$('tn-unlock').disabled=true;});
+})();

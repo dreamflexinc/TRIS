@@ -1,0 +1,271 @@
+{
+  "architecture": "Arm64",
+  "checks": [
+    "Native File and Help menus remain available",
+    "WebView content starts below both native chrome rows",
+    "Caption and menu reserve DPI-scaled layout space",
+    "Caption blank area has native drag hit testing",
+    "Native minimize caption hit target is preserved",
+    "Native maximize caption hit target is preserved",
+    "Native close caption hit target is preserved",
+    "Resize hit code 13 is available",
+    "Resize hit code 12 is available",
+    "Resize hit code 14 is available",
+    "Resize hit code 10 is available",
+    "Resize hit code 11 is available",
+    "Resize hit code 16 is available",
+    "Resize hit code 15 is available",
+    "Resize hit code 17 is available",
+    "Window maximizes with native window state",
+    "Maximized client respects the taskbar work area: {X=0,Y=0,Width=3270,Height=2084} / {X=0,Y=0,Width=3270,Height=2084}",
+    "Window minimizes with native window state",
+    "Window restores from minimized state",
+    "Native caption follows app dark mode",
+    "Native caption follows app light mode",
+    "Native chrome responds to palette edits",
+    "Theme synchronization keeps the original host restrictions",
+    "No renderer errors during native theme synchronization"
+  ],
+  "chrome": {
+    "dark": true,
+    "background": "#1D1414",
+    "accent": "#FF793F",
+    "text": "#F4F3FA",
+    "captionHeight": 68,
+    "chromeHeight": 120,
+    "highContrast": false,
+    "captionButtons": {
+      "minimize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 2980,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 2980,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 2980,
+        "Top": 2,
+        "Right": 3072,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "maximize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3072,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3072,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3072,
+        "Top": 2,
+        "Right": 3164,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "close": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3164,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3164,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3164,
+        "Top": 2,
+        "Right": 3256,
+        "Bottom": 64,
+        "IsEmpty": false
+      }
+    },
+    "backdrop": "system-mainwindow",
+    "dwmBorder": true,
+    "nativeResize": true,
+    "nativeSystemMenu": true,
+    "menuNative": true,
+    "menuBelowCaption": true
+  },
+  "dark": {
+    "dark": true,
+    "background": "#1B1614",
+    "accent": "#E78A45",
+    "text": "#F4F3FA",
+    "captionHeight": 68,
+    "chromeHeight": 120,
+    "highContrast": false,
+    "captionButtons": {
+      "minimize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 2980,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 2980,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 2980,
+        "Top": 2,
+        "Right": 3072,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "maximize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3072,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3072,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3072,
+        "Top": 2,
+        "Right": 3164,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "close": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3164,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3164,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3164,
+        "Top": 2,
+        "Right": 3256,
+        "Bottom": 64,
+        "IsEmpty": false
+      }
+    },
+    "backdrop": "system-mainwindow",
+    "dwmBorder": true,
+    "nativeResize": true,
+    "nativeSystemMenu": true,
+    "menuNative": true,
+    "menuBelowCaption": true
+  },
+  "light": {
+    "dark": false,
+    "background": "#F2F5FA",
+    "accent": "#236EAC",
+    "text": "#191822",
+    "captionHeight": 68,
+    "chromeHeight": 120,
+    "highContrast": false,
+    "captionButtons": {
+      "minimize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 2980,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 2980,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 2980,
+        "Top": 2,
+        "Right": 3072,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "maximize": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3072,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3072,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3072,
+        "Top": 2,
+        "Right": 3164,
+        "Bottom": 64,
+        "IsEmpty": false
+      },
+      "close": {
+        "Location": {
+          "IsEmpty": false,
+          "X": 3164,
+          "Y": 2
+        },
+        "Size": {
+          "IsEmpty": false,
+          "Width": 92,
+          "Height": 62
+        },
+        "X": 3164,
+        "Y": 2,
+        "Width": 92,
+        "Height": 62,
+        "Left": 3164,
+        "Top": 2,
+        "Right": 3256,
+        "Bottom": 64,
+        "IsEmpty": false
+      }
+    },
+    "backdrop": "system-mainwindow",
+    "dwmBorder": true,
+    "nativeResize": true,
+    "nativeSystemMenu": true,
+    "menuNative": true,
+    "menuBelowCaption": true
+  },
+  "bodySha256": "2a1e67b6e74e749b848c1bbec8767d46082920d8f392310259831e8b84e4cd70",
+  "runtime": "156.0.4314.58"
+}
