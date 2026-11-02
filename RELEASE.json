@@ -1,0 +1,20 @@
+{
+  "app": "TRIScore",
+  "version": "4.3.3",
+  "htmlSha256": "2a1e67b6e74e749b848c1bbec8767d46082920d8f392310259831e8b84e4cd70",
+  "unitChecks": 92,
+  "browserChecks": 10,
+  "nativeChecks": 48,
+  "binaries": {
+    "ARM64": {
+      "file": "TRIScore_4.3.3_Aero_Windows_ARM64.exe",
+      "sha256": "c86b23abf2f7d34294b180f8095f2d14bc7019451366bb51b6be37ddffc258c2",
+      "bytes": 51375384
+    },
+    "x64": {
+      "file": "TRIScore_4.3.3_Aero_Windows_x64.exe",
+      "sha256": "d445cea1fe0aa57e6c641e08d7f4d130a8d60cfec51cc3ad63e639125ea3dda8",
+      "bytes": 52659090
+    }
+  }
+}

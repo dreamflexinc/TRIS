@@ -1,0 +1,8 @@
+node_modules/
+.test-data/
+*.tris-vault
+*.lock
+*.tmp
+test-results/
+desktop/bin/
+desktop/obj/

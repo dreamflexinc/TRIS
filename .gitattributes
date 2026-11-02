@@ -1,0 +1,6 @@
+* text eol=lf
+*.cmd text eol=crlf
+*.ico binary
+*.png binary
+# Keep upstream license notices verbatim, including their original whitespace.
+desktop/THIRD-PARTY-NOTICES.txt -text -whitespace
